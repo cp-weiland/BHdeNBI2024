@@ -1,0 +1,104 @@
+id: https://example.com/simple_schema
+name: simple
+title: Very simple template
+description: >-
+  A test template
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  simple: https://example.com/simple_schema/
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+  linkml: https://w3id.org/linkml/
+  NCBITaxon: http://purl.obolibrary.org/obo/NCBITAXON_
+
+default_prefix: simple
+default_range: string
+
+imports:
+  - linkml:types
+  - core
+
+classes:
+
+  MyAnnotations:
+    description: A simple set of extracted annotations
+    tree_root: true  # this is the main entrypoint of annotations
+    attributes:
+      species:
+        range: Organism
+        multivalued: true
+        description: >-
+          The names of animals and plants used in the input text. Use the biological name like Tyrannosaurus rex. Provide NCBI Identifier. 
+      genus:
+        range: Organism
+        multivalued: true
+        description: >-
+          The genus of animals and plants used in the input text. Use the first part of the biological name like Tyrannosaurus for Tyrannosaurus rex.
+
+      habitat:
+        range: Habitat
+        multivalued: true
+        description: >-
+          The place where an organism lives is known as a habitat. The main habitat of the giant otter, is the river itself. Prefer ENVO for habitat descriptions.
+
+  Habitat:
+    is_a: CompoundExpression
+    attributes:
+      location:
+        range: Location
+      environment:
+        range: Environment
+      environmental_material:
+        range: EnvironmentalMaterial
+      method:
+        range: Method
+
+  Organism:
+    is_a: NamedEntity
+    id_prefixes:
+      - NCBITaxon
+    annotations:
+      annotators: sqlite:obo:ncbitaxon
+      prompt: >-
+        The identifier and name of an animal.
+
+  Location:
+    is_a: NamedEntity
+    id_prefixes:
+      - ENVO
+      - GAZ
+    annotations:
+      annotators: sqlite:obo:envo, bioportal:GAZ
+      prompt: >-
+        The actual place where something happens.
+
+  EnvironmentalMaterial:
+    is_a: NamedEntity
+    id_prefixes:
+      - ENVO
+      - ENVTHES
+    annotations:
+      annotators: sqlite:obo:envo, bioportal:ENVTHES
+      prompt: >-
+        Raw material taken or sampled from the environment.
+
+
+  Environment:
+    is_a: NamedEntity
+    id_prefixes:
+      - ENVO
+      - ENVTHES
+    annotations:
+      annotators: sqlite:obo:envo, bioportal:ENVTHES
+      prompt: >-
+        The description of the natural setting where organism or a specimen is found. 
+
+  Method:
+    is_a: NamedEntity
+    id_prefixes:
+      - ENVTHES
+    annotations:
+      annotators: bioportal:ENVTHES
+      prompt: >-
+        A special procedure to achieve or accomplish something.
+
+
